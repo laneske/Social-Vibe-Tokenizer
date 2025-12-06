@@ -56,8 +56,9 @@ cd "$SCRIPT_DIR/contracts"
 npx hardhat node > /tmp/hardhat.log 2>&1 &
 HARDHAT_PID=$!
 
-# Wait for Hardhat to start
-sleep 3
+# Wait for Hardhat to start (increased timeout for slower systems)
+echo "⏳ Waiting for Hardhat node to start..."
+sleep 5
 
 # Check if Hardhat started successfully
 if ! ps -p $HARDHAT_PID > /dev/null; then

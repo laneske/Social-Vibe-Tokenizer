@@ -54,8 +54,9 @@ echo 🔗 Starting Hardhat node on http://127.0.0.1:8545...
 cd /d "%~dp0contracts"
 start "Hardhat Node" cmd /k "npx hardhat node"
 
-REM Wait for Hardhat to start
-timeout /t 5 /nobreak > nul
+REM Wait for Hardhat to start (increased timeout for slower systems)
+echo ⏳ Waiting for Hardhat node to start...
+timeout /t 8 /nobreak > nul
 
 REM Start Next.js dev server
 echo.
