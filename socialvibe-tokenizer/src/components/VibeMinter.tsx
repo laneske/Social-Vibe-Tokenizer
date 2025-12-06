@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useVibeMinter } from '@/hooks/useVibeMinter';
 import { userTracker } from '@/lib/userTracker';
 import { analyzeTweetVibe } from '@/lib/vibeAnalyzer';
-import { getProvider } from '@/lib/wagmi';
 
 export default function VibeMinter() {
   const [address, setAddress] = useState<string | null>(null);
