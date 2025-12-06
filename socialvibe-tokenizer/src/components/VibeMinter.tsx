@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useAccount, useContractWrite, usePrepareContractWrite } from 'wagmi';
+import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { parseEther } from 'viem';
 import { userTracker } from '@/lib/userTracker';
 import { analyzeTweetVibe } from '@/lib/vibeAnalyzer';
@@ -31,25 +31,10 @@ export default function VibeMinter() {
   const [result, setResult] = useState<any>(null);
   const [isMinting, setIsMinting] = useState(false);
 
-  // Prepare contract write with dynamic args
-  const { config } = usePrepareContractWrite({
-    address: '0x5FbDB2315678afecb367f032d93F642f64180aa3',
-    abi: SOCIAL_VIBE_NFT_ABI,
-    functionName: 'mintVibeNFT',
-    args: address ? [
-      address,
-      'https://example.com/metadata.json',
-      tweetText,
-      'POSITIVE',
-      85n,
-      twitterHandle || '@anonymous',
-      'POSITIVE_VIBE'
-    ] : undefined,
-    value: parseEther('0.001'),
-    enabled: !!address && !!tweetText.trim()
+  const { writeContract, data: hash } = useWriteContract();
+  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+    hash,
   });
-
-  const { write: mintNFT } = useContractWrite(config);
 
   const handleMint = async () => {
     if (!address) {
@@ -71,24 +56,36 @@ export default function VibeMinter() {
       // Analyze vibe
       const analysis = await analyzeTweetVibe(tweetText);
       
-      // Execute mint
-      if (mintNFT) {
-        mintNFT();
-        
-        // Record mint
-        userTracker.recordMint(address);
-        
-        setResult({
-          success: true,
-          transactionHash: '0x' + Math.random().toString(16).substr(2, 64),
-          sentiment: analysis.Sentiment,
-          positiveScore: analysis.SentimentScore?.Positive,
-          userId: user.id
-        });
-        
-        // Reset form
-        setTweetText('');
-      }
+      // Execute mint with wagmi v3
+      writeContract({
+        address: '0x5FbDB2315678afecb367f032d93F642f64180aa3',
+        abi: SOCIAL_VIBE_NFT_ABI,
+        functionName: 'mintVibeNFT',
+        args: [
+          address,
+          'https://example.com/metadata.json',
+          tweetText,
+          analysis.Sentiment || 'POSITIVE',
+          BigInt(Math.floor((analysis.SentimentScore?.Positive || 0.85) * 100)),
+          twitterHandle || '@anonymous',
+          'POSITIVE_VIBE'
+        ],
+        value: parseEther('0.001'),
+      });
+      
+      // Record mint
+      userTracker.recordMint(address);
+      
+      setResult({
+        success: true,
+        transactionHash: hash || '0x...',
+        sentiment: analysis.Sentiment,
+        positiveScore: analysis.SentimentScore?.Positive,
+        userId: user.id
+      });
+      
+      // Reset form
+      setTweetText('');
       
     } catch (error) {
       console.error('Error:', error);
