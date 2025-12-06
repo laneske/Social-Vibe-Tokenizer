@@ -1,17 +1,22 @@
 'use client';
 
-import { useState } from 'react';
-import { useAccount } from 'wagmi';
+import { useState, useEffect } from 'react';
 import { useVibeMinter } from '@/hooks/useVibeMinter';
 import { userTracker } from '@/lib/userTracker';
 import { analyzeTweetVibe } from '@/lib/vibeAnalyzer';
+import { getProvider } from '@/lib/wagmi';
 
 export default function VibeMinter() {
-  const { address } = useAccount();
+  const [address, setAddress] = useState<string | null>(null);
   const { mintVibe, isMinting } = useVibeMinter();
   const [tweetText, setTweetText] = useState('');
   const [twitterHandle, setTwitterHandle] = useState('');
   const [result, setResult] = useState<any>(null);
+
+  useEffect(() => {
+    // For now, use the first Hardhat account
+    setAddress('0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266');
+  }, []);
 
   const handleMint = async () => {
     if (!address) {
