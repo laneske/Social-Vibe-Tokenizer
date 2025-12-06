@@ -2,7 +2,40 @@
 
 **Turn positive social vibes into tradable NFTs!**
 
-## 🚀 Project Overview
+## 🚀 Quick Start
+
+### Option 1: Automated Setup (Recommended)
+
+**Windows:**
+```bash
+setup.bat
+```
+
+**Mac/Linux:**
+```bash
+chmod +x setup.sh
+./setup.sh
+```
+
+This will automatically:
+- ✅ Install all dependencies
+- ✅ Start Hardhat node (blockchain)
+- ✅ Start Next.js dev server
+- ✅ Open http://localhost:3000 in your browser
+
+### Option 2: Manual Setup
+
+See [GETTING_STARTED.md](GETTING_STARTED.md) for detailed manual setup instructions.
+
+### Having Issues?
+
+If you see "localhost refused to connect":
+1. Make sure you ran `npm install` in both `socialvibe-tokenizer` and `contracts` directories
+2. Ensure `npm run dev` is running in the `socialvibe-tokenizer` directory
+3. Check that Node.js 18+ is installed: `node --version`
+4. See [GETTING_STARTED.md](GETTING_STARTED.md) for troubleshooting help
+
+## 🎯 Project Overview
 
 SocialVibe Tokenizer is a Web3 application that transforms positive crypto community engagement into verifiable NFT assets. Built for the @Seedify bounty, the project demonstrates real utility by analyzing sentiment and minting NFTs backed by meaningful social contributions.
 
@@ -30,8 +63,7 @@ SocialVibe Tokenizer is a Web3 application that transforms positive crypto commu
 - **Next.js 14** with TypeScript
 - **React 18** for UI components
 - **Tailwind CSS** for styling
-- **Wagmi** for wallet integration
-- **Viem** for Ethereum interactions
+- **Ethers.js** for blockchain interactions
 
 ### Smart Contracts
 - **Solidity 0.8.19**
@@ -44,12 +76,12 @@ SocialVibe Tokenizer is a Web3 application that transforms positive crypto commu
 - **Node.js** runtime
 - **TypeScript** for type safety
 
-## 📋 Setup Instructions
+## 📋 Manual Setup Instructions
 
 ### Prerequisites
 - Node.js 18+ installed
 - npm or yarn package manager
-- MetaMask or compatible Web3 wallet
+- MetaMask or compatible Web3 wallet (optional)
 
 ### 1. Install Dependencies
 
@@ -72,19 +104,7 @@ npx hardhat node
 
 This starts a local Ethereum node at `http://127.0.0.1:8545` (Chain ID: 31337)
 
-### 3. Deploy Smart Contracts
-
-In a new terminal:
-
-```bash
-cd contracts
-npx hardhat compile
-npx hardhat run scripts/deploy.ts --network localhost
-```
-
-Note the deployed contract address (typically `0x5FbDB2315678afecb367f032d93F642f64180aa3`)
-
-### 4. Start Frontend Development Server
+### 3. Start Frontend Development Server
 
 In another terminal:
 
@@ -95,7 +115,7 @@ npm run dev
 
 Visit `http://localhost:3000` in your browser
 
-### 5. Connect MetaMask
+### 4. Connect MetaMask (Optional)
 
 1. Open MetaMask
 2. Click Settings → Networks → Add Network
