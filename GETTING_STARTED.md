@@ -82,6 +82,33 @@ You should see the SocialVibe Tokenizer home page! 🎉
 
 ## Troubleshooting
 
+### "useConfig must be used within WagmiConfig" Error
+
+**Problem:** You're seeing old cached code even after pulling the latest changes.
+
+**Solution - Quick Fix:**
+
+**Windows:**
+```bash
+fix-cache.bat
+```
+
+**Mac/Linux:**
+```bash
+chmod +x fix-cache.sh
+./fix-cache.sh
+```
+
+Or manually:
+```bash
+cd socialvibe-tokenizer
+rm -rf .next node_modules package-lock.json
+npm install
+npm run dev
+```
+
+This clears all caches and reinstalls dependencies with the latest code.
+
 ### "localhost refused to connect"
 
 **Problem:** The dev server isn't running.
