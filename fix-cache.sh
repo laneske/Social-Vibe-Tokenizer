@@ -18,7 +18,7 @@ cd "$SCRIPT_DIR/socialvibe-tokenizer"
 echo "📦 Removing old build artifacts and cache..."
 rm -rf .next
 rm -rf node_modules
-rm -rf package-lock.json
+rm -f package-lock.json
 
 echo ""
 echo "📦 Reinstalling dependencies..."

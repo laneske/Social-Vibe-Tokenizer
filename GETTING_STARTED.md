@@ -102,7 +102,8 @@ chmod +x fix-cache.sh
 Or manually:
 ```bash
 cd socialvibe-tokenizer
-rm -rf .next node_modules package-lock.json
+rm -rf .next node_modules
+rm -f package-lock.json
 npm install
 npm run dev
 ```
