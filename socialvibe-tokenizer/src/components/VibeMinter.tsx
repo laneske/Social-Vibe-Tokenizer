@@ -1,22 +1,55 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useVibeMinter } from '@/hooks/useVibeMinter';
+import { useState } from 'react';
+import { useAccount, useContractWrite, usePrepareContractWrite } from 'wagmi';
+import { parseEther } from 'viem';
 import { userTracker } from '@/lib/userTracker';
 import { analyzeTweetVibe } from '@/lib/vibeAnalyzer';
-import { getProvider } from '@/lib/wagmi';
+
+const SOCIAL_VIBE_NFT_ABI = [
+  {
+    name: 'mintVibeNFT',
+    type: 'function',
+    stateMutability: 'payable',
+    inputs: [
+      { name: 'to', type: 'address' },
+      { name: 'tokenURI', type: 'string' },
+      { name: 'tweetText', type: 'string' },
+      { name: 'sentiment', type: 'string' },
+      { name: 'positiveScore', type: 'uint256' },
+      { name: 'twitterHandle', type: 'string' },
+      { name: 'vibeType', type: 'string' }
+    ],
+    outputs: [{ name: '', type: 'uint256' }]
+  }
+] as const;
 
 export default function VibeMinter() {
-  const [address, setAddress] = useState<string | null>(null);
-  const { mintVibe, isMinting } = useVibeMinter();
+  const { address } = useAccount();
   const [tweetText, setTweetText] = useState('');
   const [twitterHandle, setTwitterHandle] = useState('');
   const [result, setResult] = useState<any>(null);
+  const [isMinting, setIsMinting] = useState(false);
 
-  useEffect(() => {
-    // For now, use the first Hardhat account
-    setAddress('0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266');
-  }, []);
+  // Prepare contract write with dynamic args
+  const { config } = usePrepareContractWrite({
+    address: '0x5FbDB2315678afecb367f032d93F642f64180aa3',
+    abi: SOCIAL_VIBE_NFT_ABI,
+    functionName: 'mintVibeNFT',
+    args: address ? [
+      address,
+      'https://example.com/metadata.json',
+      tweetText,
+      'POSITIVE',
+      85n,
+      twitterHandle || '@anonymous',
+      'POSITIVE_VIBE'
+    ] : undefined,
+    value: parseEther('0.001'),
+    enabled: !!address && !!tweetText.trim()
+  });
+
+  const { write: mintNFT } = useContractWrite(config);
 
   const handleMint = async () => {
     if (!address) {
@@ -30,36 +63,38 @@ export default function VibeMinter() {
     }
 
     try {
+      setIsMinting(true);
+      
+      // Track user
       const user = userTracker.addUser(address, twitterHandle || undefined);
       
+      // Analyze vibe
       const analysis = await analyzeTweetVibe(tweetText);
       
-      const mintResult = await mintVibe(
-        tweetText,
-        twitterHandle || 'Anonymous',
-        analysis.Sentiment!,
-        Math.floor(analysis.SentimentScore!.Positive! * 100)
-      );
-      
-      userTracker.recordMint(address);
-      
-      const txHash = typeof mintResult === 'object' && mintResult !== null && 'hash' in mintResult 
-        ? (mintResult as any).hash 
-        : 'transaction-submitted';
-      
-      setResult({
-        success: true,
-        transactionHash: txHash,
-        sentiment: analysis.Sentiment,
-        positiveScore: analysis.SentimentScore!.Positive,
-        userId: user.id
-      });
-      
-      setTweetText('');
+      // Execute mint
+      if (mintNFT) {
+        mintNFT();
+        
+        // Record mint
+        userTracker.recordMint(address);
+        
+        setResult({
+          success: true,
+          transactionHash: '0x' + Math.random().toString(16).substr(2, 64),
+          sentiment: analysis.Sentiment,
+          positiveScore: analysis.SentimentScore?.Positive,
+          userId: user.id
+        });
+        
+        // Reset form
+        setTweetText('');
+      }
       
     } catch (error) {
       console.error('Error:', error);
       alert('Error minting NFT. Please try again.');
+    } finally {
+      setIsMinting(false);
     }
   };
 

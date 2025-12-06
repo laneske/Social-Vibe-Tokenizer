@@ -1,10 +1,21 @@
-// Simple ethers.js provider setup - no wagmi complexity
-import { BrowserProvider } from 'ethers';
+import { createClient, configureChains } from 'wagmi';
+import { hardhat } from 'wagmi/chains';
+import { publicProvider } from 'wagmi/providers/public';
+import { InjectedConnector } from 'wagmi/connectors/injected';
 
-export const getProvider = () => {
-  if (typeof window === 'undefined') return null;
-  
-  // Connect to local Hardhat node
-  return new BrowserProvider('http://127.0.0.1:8545');
-};
+const { publicClient, webSocketPublicClient } = configureChains(
+  [hardhat],
+  [publicProvider()]
+);
+
+export const wagmiClient = createClient({
+  autoConnect: false,
+  connectors: [
+    new InjectedConnector({
+      chains: [hardhat],
+    }),
+  ],
+  publicClient,
+  webSocketPublicClient,
+});
 

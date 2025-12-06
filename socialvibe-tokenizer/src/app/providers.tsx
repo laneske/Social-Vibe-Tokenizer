@@ -1,8 +1,13 @@
 'use client';
 
 import { ReactNode } from 'react';
+import { WagmiConfig } from 'wagmi';
+import { wagmiClient } from '@/lib/wagmi';
 
 export function Providers({ children }: { children: ReactNode }) {
-  // No wrapper needed - using ethers directly
-  return <>{children}</>;
+  return (
+    <WagmiConfig client={wagmiClient}>
+      {children}
+    </WagmiConfig>
+  );
 }
