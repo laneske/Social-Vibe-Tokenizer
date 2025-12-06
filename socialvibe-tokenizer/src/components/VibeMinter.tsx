@@ -5,16 +5,20 @@ import { useVibeMinter } from '@/hooks/useVibeMinter';
 import { userTracker } from '@/lib/userTracker';
 import { analyzeTweetVibe } from '@/lib/vibeAnalyzer';
 
+// Demo wallet address for testing (Hardhat's first test account)
+const DEMO_WALLET_ADDRESS = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266';
+
 export default function VibeMinter() {
-  const [address, setAddress] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+  // Initialize with demo wallet address for testing purposes
+  const [address, setAddress] = useState<string | null>(DEMO_WALLET_ADDRESS);
   const { mintVibe, isMinting } = useVibeMinter();
   const [tweetText, setTweetText] = useState('');
   const [twitterHandle, setTwitterHandle] = useState('');
   const [result, setResult] = useState<any>(null);
 
   useEffect(() => {
-    // For now, use the first Hardhat account
-    setAddress('0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266');
+    setMounted(true);
   }, []);
 
   const handleMint = async () => {

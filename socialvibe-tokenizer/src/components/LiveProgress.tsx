@@ -6,8 +6,10 @@ import { userTracker } from '@/lib/userTracker';
 export default function LiveProgress() {
   const [stats, setStats] = useState(userTracker.getStats());
   const [timeElapsed, setTimeElapsed] = useState(0);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const startTime = Date.now();
     
     const interval = setInterval(() => {
@@ -17,6 +19,10 @@ export default function LiveProgress() {
 
     return () => clearInterval(interval);
   }, []);
+
+  if (!mounted) {
+    return null;
+  }
 
   const usersPerHour = timeElapsed > 0 ? 
     (stats.totalUsers / (timeElapsed / 3600000)).toFixed(1) : '0';

@@ -47,7 +47,7 @@ export const useVibeMinter = () => {
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       return {
-        hash: '0x' + Math.random().toString(16).substr(2, 64),
+        hash: '0x' + Math.random().toString(16).substring(2, 66),
         sentiment,
         score
       };
