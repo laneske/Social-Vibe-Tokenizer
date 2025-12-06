@@ -43,9 +43,13 @@ export default function VibeMinter() {
       
       userTracker.recordMint(address);
       
+      const txHash = typeof mintResult === 'object' && mintResult !== null && 'hash' in mintResult 
+        ? (mintResult as any).hash 
+        : 'transaction-submitted';
+      
       setResult({
         success: true,
-        transactionHash: mintResult.hash,
+        transactionHash: txHash,
         sentiment: analysis.Sentiment,
         positiveScore: analysis.SentimentScore!.Positive,
         userId: user.id

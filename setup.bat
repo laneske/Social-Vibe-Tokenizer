@@ -1,53 +1,50 @@
 @echo off
-REM SocialVibe Tokenizer - Quick Start Script for Windows
+setlocal enabledelayedexpansion
+REM SocialVibe Tokenizer - Automated Setup & Startup
 
 echo.
 echo ===============================================
-echo  🌈 SocialVibe Tokenizer - Setup Guide
+echo  🌈 SocialVibe Tokenizer - Auto Start
 echo ===============================================
 echo.
 
-echo Step 1: Installing dependencies...
-echo.
+REM Kill any existing node processes
+echo [1/4] Cleaning up old processes...
+taskkill /F /IM node.exe >nul 2>&1
+timeout /t 2 /nobreak >nul
 
-cd /d "%~dp0socialvibe-tokenizer"
-if exist "node_modules" (
-    echo ✅ Frontend dependencies already installed
-) else (
-    echo Installing frontend dependencies...
-    call npm install
-)
-
+REM Start Hardhat node in a new window
+echo [2/4] Starting Hardhat blockchain node...
 cd /d "%~dp0contracts"
-if exist "node_modules" (
-    echo ✅ Contract dependencies already installed
-) else (
-    echo Installing contract dependencies...
-    call npm install
-)
+start "Hardhat Node" cmd /k "npx hardhat node"
+timeout /t 6 /nobreak >nul
 
+REM Start Next.js dev server in a new window
+echo [3/4] Starting Next.js frontend...
+cd /d "%~dp0socialvibe-tokenizer"
+start "Next.js Dev Server" cmd /k "npm run dev"
+timeout /t 6 /nobreak >nul
+
+REM Display access info
 echo.
 echo ===============================================
-echo  📋 Setup Complete! Next Steps:
+echo  ✅ Services Started Successfully!
 echo ===============================================
 echo.
-echo 1. START HARDHAT NODE:
-echo    cd contracts
-echo    npx hardhat node
+echo 📍 Hardhat Node:
+echo    http://127.0.0.1:8545
 echo.
-echo 2. IN NEW TERMINAL - DEPLOY CONTRACTS:
-echo    cd contracts
-echo    npx hardhat compile
-echo    npx hardhat run scripts/deploy.ts --network localhost
-echo.
-echo 3. IN NEW TERMINAL - START FRONTEND:
-echo    cd socialvibe-tokenizer
-echo    npm run dev
-echo.
-echo 4. OPEN BROWSER:
+echo 🌐 Frontend:
 echo    http://localhost:3000
+echo    (or http://localhost:3001 if 3000 is in use)
 echo.
-echo 5. CONNECT METAMASK:
+echo 📝 Contract Address:
+echo    0x5FbDB2315678afecb367f032d93F642f64180aa3
+echo.
+echo ========================================
+echo Close the new windows to stop services
+echo ========================================
+echo.
 echo    - Add localhost network (http://127.0.0.1:8545)
 echo    - Chain ID: 31337
 echo    - Import test account from Hardhat node
