@@ -5,9 +5,9 @@ async function main() {
   
   const SocialVibeNFT = await ethers.getContractFactory("SocialVibeNFT");
   const socialVibeNFT = await SocialVibeNFT.deploy();
-  
-  await socialVibeNFT.waitForDeployment();
-  const address = await socialVibeNFT.getAddress();
+
+  await socialVibeNFT.deployed();
+  const address = socialVibeNFT.address;
   
   console.log("✅ SocialVibeNFT deployed to:", address);
   console.log("📝 Contract details:");

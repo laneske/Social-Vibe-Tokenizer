@@ -36,7 +36,7 @@ contract SocialVibeNFT is ERC721, Ownable {
     
     function mintVibeNFT(
         address to,
-        string memory tokenURI,
+        string memory _tokenURI,
         string memory tweetText,
         string memory sentiment,
         uint256 positiveScore,
@@ -50,7 +50,7 @@ contract SocialVibeNFT is ERC721, Ownable {
         uint256 newTokenId = _tokenIdCounter.current();
         
         _mint(to, newTokenId);
-        _setTokenURI(newTokenId, tokenURI);
+        _setTokenURI(newTokenId, _tokenURI);
         
         vibeData[newTokenId] = VibeData({
             tweetText: tweetText,
@@ -69,7 +69,7 @@ contract SocialVibeNFT is ERC721, Ownable {
     
     function freeMint(
         address to,
-        string memory tokenURI,
+        string memory _tokenURI,
         string memory tweetText,
         string memory twitterHandle
     ) public onlyOwner returns (uint256) {
@@ -77,7 +77,7 @@ contract SocialVibeNFT is ERC721, Ownable {
         uint256 newTokenId = _tokenIdCounter.current();
         
         _mint(to, newTokenId);
-        _setTokenURI(newTokenId, tokenURI);
+        _setTokenURI(newTokenId, _tokenURI);
         
         vibeData[newTokenId] = VibeData({
             tweetText: tweetText,
@@ -121,7 +121,7 @@ contract SocialVibeNFT is ERC721, Ownable {
         payable(owner()).transfer(address(this).balance);
     }
     
-    function _exists(uint256 tokenId) internal view returns (bool) {
+    function _exists(uint256 tokenId) internal view override returns (bool) {
         return _ownerOf(tokenId) != address(0);
     }
 }
